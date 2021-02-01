@@ -22,12 +22,26 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (64, 64))
 
         self.rect = self.image.get_rect()
+        self.vel_x = 0
 
     def update(self):
-        self.rect.center = pygame.mouse.get_pos()
+        self.rect.x += self.vel_x
 
         if self.rect.top < HEIGHT - 100:
             self.rect.top = HEIGHT - 100
+
+    # Player-controlled movement:
+    def go_left(self):
+        """ Called when the user hits the left arrow. """
+        self.vel_x = -6
+
+    def go_right(self):
+        """ Called when the user hits the right arrow. """
+        self.vel_x = 6
+
+    def stop(self):
+        """ Called when the user lets off the keyboard. """
+        self.vel_x = 0
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, y_coord):
@@ -39,7 +53,8 @@ class Enemy(pygame.sprite.Sprite):
 
         self.image = pygame.image.load("./images/space_invader_1.jpg")
         self.image = pygame.transform.scale(self.image, (60, 40))
-        self.image.set_colorkey((255, 255, 255))
+        self.image.set_colorkey(WHITE)
+
 
         self.rect = self.image.get_rect()
 
@@ -50,12 +65,13 @@ class Enemy(pygame.sprite.Sprite):
         self.x_vel = 3
 
     def update(self):
-        """Move the enemy side-to-side"""
-        self.rect.x += self.x_vel
-
-        # Keep enemy in the screen
-        if self.rect .right > WIDTH or self.rect.left < 0:
-            self.x_vel *= -1
+        # """Move the enemy side-to-side"""
+        pass
+        # self.rect.x += self.x_vel
+        #
+        # # Keep enemy in the screen
+        # if self.rect .right > WIDTH or self.rect.left < 0:
+        #     self.x_vel *= -1
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -98,8 +114,48 @@ def main():
 
     #   --- enemies
     for i in range(NUM_ROWS):
-        enemy = Enemy(100+i*75)
-        enemy.rect.x = enemy.rect.x - random.choice([-10])
+        # enemy 1
+        enemy = Enemy(100 + i * 75)
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 2
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x - 80
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 3
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x - 155
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 4
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x - 230
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 5
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x - 305
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 6
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x + 80
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 7
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x + 155
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 8
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x + 230
+        all_sprites.add(enemy)
+        enemy_sprites.add(enemy)
+        # enemy 9
+        enemy = Enemy(100 + i * 75)
+        enemy.rect.x = enemy.rect.x + 305
         all_sprites.add(enemy)
         enemy_sprites.add(enemy)
 
@@ -113,12 +169,24 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if len(player_bullet_sprites) < 3:
                     # create a bullet
                     bullet = Bullet(player.rect.midtop)
                     all_sprites.add(bullet)
                     player_bullet_sprites.add(bullet)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a:
+                    player.go_left()
+                if event.key == pygame.K_d:
+                    player.go_right()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_a and player.vel_x < 0:
+                    player.stop()
+                if event.key == pygame.K_d and player.vel_x > 0:
+                    player.stop()
+
+
 
         # ----- LOGIC
         all_sprites.update()
